@@ -34,6 +34,18 @@ except ImportError:
 class PivotMan:
     """Main class for PivotMan network scanning and topology mapping."""
     
+    # Visualization constants
+    COLOR_UP = '#4CAF50'      # Green for hosts that are up
+    COLOR_DOWN = '#F44336'    # Red for hosts that are down
+    COLOR_UNKNOWN = '#9E9E9E' # Gray for unknown state
+    
+    # Layout parameters
+    LAYOUT_SMALL_THRESHOLD = 10  # Network size threshold for layout algorithm
+    LAYOUT_SMALL_K = 2           # Spring constant for small networks
+    LAYOUT_SMALL_ITER = 50       # Iterations for small networks
+    LAYOUT_LARGE_K = 1           # Spring constant for large networks
+    LAYOUT_LARGE_ITER = 30       # Iterations for large networks
+    
     def __init__(self, targets, scan_type='sn', top_ports=None, output_format='text', 
                  visualize=False, viz_output=None):
         """
@@ -177,21 +189,23 @@ class PivotMan:
         fig, ax = plt.subplots(figsize=(12, 8))
         
         # Choose layout algorithm based on graph size
-        if len(self.network_graph.nodes) <= 10:
-            pos = nx.spring_layout(self.network_graph, k=2, iterations=50)
+        if len(self.network_graph.nodes) <= self.LAYOUT_SMALL_THRESHOLD:
+            pos = nx.spring_layout(self.network_graph, k=self.LAYOUT_SMALL_K, 
+                                 iterations=self.LAYOUT_SMALL_ITER)
         else:
-            pos = nx.spring_layout(self.network_graph, k=1, iterations=30)
+            pos = nx.spring_layout(self.network_graph, k=self.LAYOUT_LARGE_K, 
+                                 iterations=self.LAYOUT_LARGE_ITER)
         
         # Prepare node colors based on state
         node_colors = []
         for node in self.network_graph.nodes():
             state = self.network_graph.nodes[node].get('state', 'unknown')
             if state == 'up':
-                node_colors.append('#4CAF50')  # Green for up
+                node_colors.append(self.COLOR_UP)
             elif state == 'down':
-                node_colors.append('#F44336')  # Red for down
+                node_colors.append(self.COLOR_DOWN)
             else:
-                node_colors.append('#9E9E9E')  # Gray for unknown
+                node_colors.append(self.COLOR_UNKNOWN)
         
         # Draw nodes
         nx.draw_networkx_nodes(
@@ -233,9 +247,9 @@ class PivotMan:
         ax.set_title('Network Topology Map', fontsize=16, fontweight='bold', pad=20)
         
         # Create legend
-        up_patch = mpatches.Patch(color='#4CAF50', label='Host Up')
-        down_patch = mpatches.Patch(color='#F44336', label='Host Down')
-        unknown_patch = mpatches.Patch(color='#9E9E9E', label='Unknown')
+        up_patch = mpatches.Patch(color=self.COLOR_UP, label='Host Up')
+        down_patch = mpatches.Patch(color=self.COLOR_DOWN, label='Host Down')
+        unknown_patch = mpatches.Patch(color=self.COLOR_UNKNOWN, label='Unknown')
         ax.legend(handles=[up_patch, down_patch, unknown_patch], loc='upper right')
         
         # Remove axes

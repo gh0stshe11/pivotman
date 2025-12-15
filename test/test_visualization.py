@@ -20,16 +20,24 @@ def test_visualization_initialization():
     """Test PivotMan initialization with visualization parameters."""
     print("[TEST] Testing visualization initialization...")
     
-    pm = PivotMan(
-        targets=['192.168.1.1'],
-        visualize=True,
-        viz_output='test.png'
-    )
+    with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+        tmp_path = tmp.name
     
-    assert pm.visualize == True
-    assert pm.viz_output == 'test.png'
-    
-    print("[PASS] Visualization initialization test passed!")
+    try:
+        pm = PivotMan(
+            targets=['192.168.1.1'],
+            visualize=True,
+            viz_output=tmp_path
+        )
+        
+        assert pm.visualize == True
+        assert pm.viz_output == tmp_path
+        
+        print("[PASS] Visualization initialization test passed!")
+    finally:
+        # Clean up
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
 
 
 def test_render_topology_empty():
