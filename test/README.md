@@ -9,6 +9,16 @@ This directory contains test scripts for PivotMan.
 python3 test/test_basic.py
 ```
 
+### Visualization Tests
+```bash
+python3 test/test_visualization.py
+```
+
+### Run All Tests
+```bash
+python3 test/test_basic.py && python3 test/test_visualization.py
+```
+
 ### Manual Testing
 For manual testing with actual network scans, use sample commands:
 
@@ -18,6 +28,9 @@ python3 pivotman.py --targets 127.0.0.1 --scan-type sn
 
 # Test with private network range (adjust to your network)
 python3 pivotman.py --targets 192.168.1.0/24 --scan-type sn --output json
+
+# Test visualization feature
+python3 pivotman.py --targets 127.0.0.1 --scan-type sn --visualize --viz-output test_viz.png
 ```
 
 ## Test Coverage
@@ -26,6 +39,14 @@ python3 pivotman.py --targets 192.168.1.0/24 --scan-type sn --output json
   - Target validation (IP addresses and CIDR ranges)
   - PivotMan initialization
   - Output format generation (text and JSON)
+
+- `test_visualization.py`: Unit tests for visualization features
+  - Visualization initialization and configuration
+  - Rendering with empty graphs
+  - Rendering with network nodes
+  - Node color assignment based on state
+  - Hostname display in labels
+  - File output generation
 
 ## Note on Network Scanning Tests
 
