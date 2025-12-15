@@ -17,6 +17,7 @@
 - ✅ **CLI Input Parsing**: Accept IP addresses or CIDR ranges as targets
 - ✅ **Flexible Scanning**: Customize nmap scan types and parameters
 - ✅ **Network Mapping**: Build network topology from scan results
+- ✅ **Visual Topology Rendering**: Generate graphical network visualizations using Matplotlib
 - ✅ **Multiple Output Formats**: Plain text and JSON outputs
 
 ## Quick Start
@@ -69,6 +70,15 @@ python3 pivotman.py --targets 192.168.1.0/24 --scan-type sS --top-ports 100
 python3 pivotman.py --targets 10.0.0.0/24 --output json > results.json
 ```
 
+### Generate Network Topology Visualization
+```bash
+# Display interactive visualization
+python3 pivotman.py --targets 192.168.1.0/24 --visualize
+
+# Save visualization to file
+python3 pivotman.py --targets 192.168.1.0/24 --visualize --viz-output topology.png
+```
+
 ## Command Line Options
 
 | Option | Required | Description | Example |
@@ -77,6 +87,8 @@ python3 pivotman.py --targets 10.0.0.0/24 --output json > results.json
 | `--scan-type` | No | Nmap scan type (default: sn for ping scan) | `sS`, `sT`, `sV`, `sC` |
 | `--top-ports` | No | Scan top N most common ports | `100`, `1000` |
 | `--output` | No | Output format: text or json (default: text) | `text`, `json` |
+| `--visualize` | No | Render network topology visualization | (flag, no value) |
+| `--viz-output` | No | Save visualization to file (PNG format) | `topology.png` |
 
 ## Project Structure
 
@@ -126,10 +138,10 @@ PivotMan is designed for:
 
 ## Future Enhancements
 
-- 🔄 Visual topology rendering (Graphviz/Matplotlib)
 - 🔄 AI-powered Q&A agent for scan analysis
 - 🔄 Automated pivoting opportunity detection
 - 🔄 Advanced network relationship inference
+- 🔄 Enhanced visualization with Graphviz support
 - 🔄 Report generation and export
 
 ## Contributing

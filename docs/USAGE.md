@@ -60,6 +60,18 @@ python3 pivotman.py --targets 192.168.1.0/24 --scan-type sS --top-ports 100
 python3 pivotman.py --targets 192.168.1.1 --output json
 ```
 
+### Network Topology Visualization
+```bash
+# Display interactive visualization (window will open)
+python3 pivotman.py --targets 192.168.1.0/24 --visualize
+
+# Save visualization to a PNG file
+python3 pivotman.py --targets 192.168.1.0/24 --visualize --viz-output network_map.png
+
+# Combine with scanning options
+sudo python3 pivotman.py --targets 192.168.1.0/24 --scan-type sV --top-ports 100 --visualize --viz-output detailed_scan.png
+```
+
 ## Command Line Options
 
 | Option | Required | Description | Example |
@@ -68,6 +80,8 @@ python3 pivotman.py --targets 192.168.1.1 --output json
 | `--scan-type` | No | Nmap scan type (default: sn) | `sS`, `sT`, `sV`, `sC` |
 | `--top-ports` | No | Scan top N ports | `100`, `1000` |
 | `--output` | No | Output format (default: text) | `text`, `json` |
+| `--visualize` | No | Enable network topology visualization | (flag) |
+| `--viz-output` | No | Save visualization to file | `topology.png` |
 
 ## Nmap Scan Types
 
@@ -93,6 +107,18 @@ sudo python3 pivotman.py --targets 192.168.1.10 --scan-type sV --top-ports 1000
 ### Example 3: JSON Export for Further Processing
 ```bash
 python3 pivotman.py --targets 10.0.0.0/24 --scan-type sn --output json > scan_results.json
+```
+
+### Example 4: Network Topology Visualization
+```bash
+# Create a visual map of discovered hosts
+python3 pivotman.py --targets 192.168.1.0/24 --visualize --viz-output network_topology.png
+```
+
+### Example 5: Complete Workflow with Visualization
+```bash
+# Scan, analyze, and visualize a network
+sudo python3 pivotman.py --targets 10.0.0.0/24 --scan-type sV --top-ports 1000 --visualize --viz-output complete_scan.png --output json > scan_data.json
 ```
 
 ## Output Interpretation
@@ -176,3 +202,23 @@ Use `sudo` for scans that require elevated privileges (SYN scan, UDP scan, etc.)
 3. **Rate Limiting**: Use appropriate timing options to avoid overwhelming networks
 4. **Documentation**: Save scan results for comparison and reporting
 5. **Security**: Store scan results securely and handle sensitive data appropriately
+
+## Visualization Features
+
+PivotMan can generate visual network topology maps to help you understand network structure at a glance.
+
+### Color Coding
+- **Green nodes**: Hosts that are up and responding
+- **Red nodes**: Hosts that are down or not responding  
+- **Gray nodes**: Hosts with unknown state
+
+### Node Labels
+Each node displays:
+- IP address
+- Hostname (if available and resolved)
+
+### Usage Tips
+- Use `--visualize` without `--viz-output` to display an interactive visualization window
+- Use `--viz-output` to save the visualization as a PNG file for reports
+- Visualization works best with 2-50 hosts; larger networks may appear cluttered
+- The spring layout algorithm automatically arranges nodes for optimal visibility

@@ -20,7 +20,8 @@ PivotMan is a CLI-based cybersecurity pentesting tool designed for Kali Linux. I
 3. **Topology Mapper**
    - Graph representation using `NetworkX`
    - Stores host relationships and network structure
-   - Future: Visual rendering with Graphviz/Matplotlib
+   - Visual rendering with Matplotlib
+   - Supports interactive display and file export (PNG format)
 
 4. **Data Storage**
    - In-memory storage using Python dictionaries
@@ -39,6 +40,8 @@ Nmap Scanning
 Results Parsing
     ↓
 Topology Building
+    ↓
+Visualization (Optional)
     ↓
 Output Generation (Text/JSON)
 ```
@@ -70,13 +73,37 @@ Output Generation (Text/JSON)
 - **Node Attributes**: hostname, state, discovered flag
 - **Edges**: Network relationships (future enhancement)
 
+## Visualization System
+
+### Rendering Engine
+- **Library**: Matplotlib with NetworkX integration
+- **Layout Algorithm**: Spring layout (force-directed graph)
+- **Output Formats**: Interactive display (GUI) or PNG file
+
+### Visual Elements
+- **Nodes**: Circular representations of network hosts
+- **Colors**: 
+  - Green (#4CAF50): Hosts in 'up' state
+  - Red (#F44336): Hosts in 'down' state
+  - Gray (#9E9E9E): Hosts with unknown state
+- **Labels**: IP address and hostname (if available)
+- **Legend**: Color coding reference
+- **Edges**: Connections between hosts (currently minimal, future enhancement)
+
+### Design Decisions
+- Used Matplotlib over Graphviz for better Python integration and no external binary dependencies
+- Spring layout chosen for automatic node positioning that works well with various network sizes
+- High DPI (300) for file output ensures quality for reports and presentations
+- Interactive mode allows users to explore large networks by zooming and panning
+
 ## Future Enhancements
 
 ### Version 2.0
-- Visual topology rendering (Graphviz/Matplotlib)
-- Export topology as image files
+- Enhanced topology rendering with relationship inference
+- Graphviz integration as alternative rendering engine
 - Traceroute integration for path discovery
-- Network relationship inference
+- Network relationship inference based on routing tables
+- Export topology in multiple formats (SVG, PDF)
 
 ### Version 3.0
 - AI-powered Q&A agent for scan analysis
