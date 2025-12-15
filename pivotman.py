@@ -23,11 +23,19 @@ except ImportError:
     print("Error: networkx not installed. Run: pip install -r requirements.txt")
     sys.exit(1)
 
+try:
+    import matplotlib.pyplot as plt
+    import matplotlib.patches as mpatches
+except ImportError:
+    print("Error: matplotlib not installed. Run: pip install -r requirements.txt")
+    sys.exit(1)
+
 
 class PivotMan:
     """Main class for PivotMan network scanning and topology mapping."""
     
-    def __init__(self, targets, scan_type='sn', top_ports=None, output_format='text'):
+    def __init__(self, targets, scan_type='sn', top_ports=None, output_format='text', 
+                 visualize=False, viz_output=None):
         """
         Initialize PivotMan scanner.
         
@@ -36,11 +44,15 @@ class PivotMan:
             scan_type: Type of nmap scan (default: 'sn' for ping scan)
             top_ports: Number of top ports to scan
             output_format: Output format ('text' or 'json')
+            visualize: Whether to render network topology visualization
+            viz_output: File path to save visualization (default: display interactive)
         """
         self.targets = targets
         self.scan_type = scan_type
         self.top_ports = top_ports
         self.output_format = output_format
+        self.visualize = visualize
+        self.viz_output = viz_output
         self.scan_results = {}
         self.network_graph = nx.Graph()
         
@@ -149,6 +161,99 @@ class PivotMan:
         
         print(f"[+] Topology built: {len(self.network_graph.nodes)} nodes")
         print()
+    
+    def render_topology(self):
+        """
+        Render visual topology representation of the network.
+        Uses matplotlib to create a network graph visualization.
+        """
+        if len(self.network_graph.nodes) == 0:
+            print("[-] No network topology to visualize.")
+            return
+        
+        print("[*] Rendering network topology visualization...")
+        
+        # Create figure and axis
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        # Choose layout algorithm based on graph size
+        if len(self.network_graph.nodes) <= 10:
+            pos = nx.spring_layout(self.network_graph, k=2, iterations=50)
+        else:
+            pos = nx.spring_layout(self.network_graph, k=1, iterations=30)
+        
+        # Prepare node colors based on state
+        node_colors = []
+        for node in self.network_graph.nodes():
+            state = self.network_graph.nodes[node].get('state', 'unknown')
+            if state == 'up':
+                node_colors.append('#4CAF50')  # Green for up
+            elif state == 'down':
+                node_colors.append('#F44336')  # Red for down
+            else:
+                node_colors.append('#9E9E9E')  # Gray for unknown
+        
+        # Draw nodes
+        nx.draw_networkx_nodes(
+            self.network_graph, pos,
+            node_color=node_colors,
+            node_size=1500,
+            alpha=0.9,
+            ax=ax
+        )
+        
+        # Draw edges
+        nx.draw_networkx_edges(
+            self.network_graph, pos,
+            width=2,
+            alpha=0.5,
+            edge_color='#666666',
+            ax=ax
+        )
+        
+        # Prepare node labels
+        labels = {}
+        for node in self.network_graph.nodes():
+            hostname = self.network_graph.nodes[node].get('hostname', '')
+            if hostname:
+                labels[node] = f"{node}\n({hostname})"
+            else:
+                labels[node] = node
+        
+        # Draw labels
+        nx.draw_networkx_labels(
+            self.network_graph, pos,
+            labels,
+            font_size=9,
+            font_weight='bold',
+            ax=ax
+        )
+        
+        # Add title and legend
+        ax.set_title('Network Topology Map', fontsize=16, fontweight='bold', pad=20)
+        
+        # Create legend
+        up_patch = mpatches.Patch(color='#4CAF50', label='Host Up')
+        down_patch = mpatches.Patch(color='#F44336', label='Host Down')
+        unknown_patch = mpatches.Patch(color='#9E9E9E', label='Unknown')
+        ax.legend(handles=[up_patch, down_patch, unknown_patch], loc='upper right')
+        
+        # Remove axes
+        ax.axis('off')
+        
+        # Adjust layout
+        plt.tight_layout()
+        
+        # Save or display
+        if self.viz_output:
+            plt.savefig(self.viz_output, dpi=300, bbox_inches='tight')
+            print(f"[+] Visualization saved to: {self.viz_output}")
+        else:
+            print("[+] Displaying interactive visualization...")
+            print("    (Close the window to continue)")
+            plt.show()
+        
+        plt.close()
         
     def generate_output(self):
         """Generate output based on format selection."""
@@ -221,6 +326,10 @@ class PivotMan:
         # Build topology
         self.build_topology()
         
+        # Render visualization if requested
+        if self.visualize:
+            self.render_topology()
+        
         # Generate output
         output = self.generate_output()
         return output
@@ -264,6 +373,17 @@ Examples:
         help='Output format (default: text)'
     )
     
+    parser.add_argument(
+        '--visualize',
+        action='store_true',
+        help='Render network topology visualization'
+    )
+    
+    parser.add_argument(
+        '--viz-output',
+        help='Save visualization to file (e.g., topology.png). If not specified, displays interactively.'
+    )
+    
     return parser.parse_args()
 
 
@@ -279,7 +399,9 @@ def main():
         targets=targets,
         scan_type=args.scan_type,
         top_ports=args.top_ports,
-        output_format=args.output
+        output_format=args.output,
+        visualize=args.visualize,
+        viz_output=args.viz_output
     )
     
     # Run scan and generate output
