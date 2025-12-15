@@ -18,7 +18,6 @@
 - ✅ **Flexible Scanning**: Customize nmap scan types and parameters
 - ✅ **Network Mapping**: Build network topology from scan results
 - ✅ **Multiple Output Formats**: Plain text and JSON outputs
-- ✅ **Professional Branding**: ASCII art logo and clean interface
 
 ## Quick Start
 
