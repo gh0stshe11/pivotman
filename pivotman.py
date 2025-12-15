@@ -9,7 +9,6 @@ import json
 import sys
 import os
 from pathlib import Path
-import subprocess
 import ipaddress
 
 try:
@@ -49,7 +48,7 @@ class PivotMan:
         """Display the PivotMan ASCII logo."""
         logo_path = Path(__file__).parent / 'logo.txt'
         if logo_path.exists():
-            with open(logo_path, 'r') as f:
+            with open(logo_path, 'r', encoding='utf-8') as f:
                 print(f.read())
         else:
             print("PivotMan - Network Topology & Pivoting Tool")
